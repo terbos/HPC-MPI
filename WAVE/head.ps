@@ -1,0 +1,82 @@
+/PlotPoints % stack: PlotArray isymbol LogFlag LineFlag=> nothing 
+{ 
+  /LineFlag  exch def     % LineFlag<0 no line, 0 solid, >0 dashed lines
+  /LogFlag   exch def     % LogFlag = 1 for log10x, 2 for log10y, 3 both, <0 ln
+  /isymbol   exch def     % isymbol = 1.....open circle 
+  /PlotArray exch def     %         = 2.....plus (+) 
+			  %         = 3.....cross (x)
+                          %         = 4.....open triangle
+                          %         = 5.....filled circle
+                          %         = 6.....filled triangle
+                          %         = 7.....asterisk (*)
+                          %         = 8.....square   =9...filled square
+                          % PlotArray = [ [x0 y0] [x1 y1] [x2 y2]...[xn yn] ]
+  LineFlag 1 eq {[1 1] 0 setdash} if
+  LineFlag 2 eq {[2 2] 0 setdash} if
+  LineFlag 3 eq {[3 3] 0 setdash} if
+  LineFlag 4 eq {[4 4] 0 setdash} if
+  LineFlag 5 eq {[5 5] 0 setdash} if
+  LineFlag 6 eq {[6 6] 0 setdash} if
+  LineFlag 7 eq {[7 7] 0 setdash} if
+  LineFlag 8 eq {[8 8] 0 setdash} if
+  LineFlag 9 eq {[9 9] 0 setdash} if
+  /icount 1 def           
+  PlotArray   
+  {                       
+     /xypoint exch def    
+      xypoint aload pop   
+     /y exch def          
+     /x exch def         
+
+      LogFlag 1 eq LogFlag 3 eq or { /x x log def} if
+      LogFlag 2 eq LogFlag 3 eq or { /y y log def} if
+      LogFlag -1 eq LogFlag -3 eq or { /x x ln def} if
+      LogFlag -2 eq LogFlag -3 eq or { /y y ln def} if
+      /xv {x xstart sub xscale mul} def
+      /yv {y ystart sub yscale mul} def 
+      LineFlag 0 ge icount 1 gt and { newpath xl yl moveto xv yv 
+				      lineto stroke} if
+      /icount icount 1 add def
+      /xl xv def
+      /yl yv def
+   } forall
+   [] 0 setdash
+
+   PlotArray
+   {
+     /xypoint exch def    
+      xypoint aload pop  
+     /y exch def          
+     /x exch def         
+
+      LogFlag 1 eq LogFlag 3 eq or { /x x log def} if
+      LogFlag 2 eq LogFlag 3 eq or { /y y log def} if
+      LogFlag -1 eq LogFlag -3 eq or { /x x ln def} if
+      LogFlag -2 eq LogFlag -3 eq or { /y y ln def} if
+      /xv {x xstart sub xscale mul} def
+      /yv {y ystart sub yscale mul} def 
+      xv yv
+      newpath
+      isymbol 1 eq { ticksize 2 div Circle gsave 1.0 setgray fill grestore
+                     stroke } if
+      isymbol 2 eq { Plus } if
+      isymbol 3 eq { Cross } if
+      isymbol 4 eq { Triangle gsave 1.0 setgray fill grestore stroke } if
+      isymbol 5 eq { ticksize 2 div Circle fill } if
+      isymbol 6 eq { Triangle fill } if
+      isymbol 7 eq { 2 copy Plus Cross } if
+      isymbol 8 eq { Square gsave 1.0 setgray fill grestore stroke } if
+      isymbol 9 eq { Square fill } if
+   } forall
+} def
+
+100 100 translate
+/xscale 2 def
+/yscale 100 def
+/xstart 0 def
+/ystart -1.0 def
+1 setgray
+1 xscale mul 0 moveto 200 xscale mul 0.0 lineto 200 xscale mul 2.0 yscale mul lineto 1 xscale mul 2.0 yscale mul lineto closepath fill
+0 setgray
+
+[
